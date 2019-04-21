@@ -39,11 +39,16 @@ then
 else
 
 	#
-	# Backup all databases in MySQL
+	# Backup all databases in MySQL and clean up
 	#
 	mysqldump --all-databases --host=$DBNAME --user=$USERNAME --password=$PASSWORD > $BCKUPPATH
+	tar -czvf "$BCKUPPATH.tar.gz" $BCKUPPATH
+	rm -f $BCKUPPATH
 
 fi
+
+
+
 
 # transfer file to Archive 
 # Archieve, encrypt, 
