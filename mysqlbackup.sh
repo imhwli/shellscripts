@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Setup up location
+# Setup backup location
 DEST="/home/hello/Desktop/test/"
 
 #
@@ -11,7 +11,7 @@ PASSWORD='Nono1234$$'
 DBNAME='localhost'
 
 #
-# check if destination exist, if not create it
+# check if destination exist, if not create it and set permission
 #
 if [ ! -d "$DEST" ]; then
 	echo "Creating backup directory"
@@ -23,27 +23,27 @@ fi
 #
 # Creating backup name with absolute path
 #
-BACKUPNAME=$(date +"DATE%Y%m%d-TIME%H%M%S")
-BCKUPPATH="$DEST$BACKUPNAME.sql"
+CURRENTDATE=$(date +"DATE%Y%m%d-TIME%H%M%S")
+BCKUPNAME="$DEST$CURRENTDATE.sql"
 
 #
 # check Database connection
 #
- if [ ! -n 'mysql --host=$DBNAME --user=$USERNAME --password=$PASSWORD' ]
+if [ ! -n 'mysql --host=$DBNAME --user=$USERNAME --password=$PASSWORD' ]
 then
 
 	#
 	# Should change to email and alert Administrator, but okay for now.  
 	# Since 
-	echo "Cannot connect to database"
+	echo "Abort: Cannot connect to database"
 else
 
 	#
-	# Backup all databases in MySQL and clean up
+	# Backup all databases in MySQL, archive, compress and clean up
 	#
-	mysqldump --all-databases --host=$DBNAME --user=$USERNAME --password=$PASSWORD > $BCKUPPATH
-	tar -czvf "$BCKUPPATH.tar.gz" $BCKUPPATH
-	rm -f $BCKUPPATH
+	mysqldump --all-databases --host=$DBNAME --user=$USERNAME --password=$PASSWORD > $BCKUPNAME
+	tar -czvf "$DEST$CURRENTDATE.tar.gz" -P $BCKUPNAME
+	rm -f $BCKUPNAME
 
 fi
 
